@@ -87,7 +87,7 @@ public class FlutterContactPickerPlugin: FlutterPlugin, MethodCallHandler,
       return true
     }
 
-    val contactsList = ArrayList<HashMap<String, Any>>()
+
 
     if (requestCode == PICK_CONTACT_SINGLE) {
       // Handle single contact selection
@@ -95,16 +95,25 @@ public class FlutterContactPickerPlugin: FlutterPlugin, MethodCallHandler,
         val cursor = activity!!.contentResolver.query(contactUri, null, null, null, null)
         cursor?.use {
           it.moveToFirst()
+          // val phoneType = it.getInt(it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE))
+          // val customLabel = it.getString(it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.LABEL))
+          // val label = ContactsContract.CommonDataKinds.Email.getTypeLabel(activity!!.resources, phoneType, customLabel) as String
           val number = it.getString(it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
           val fullName = it.getString(it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+          // val phoneNumber = HashMap<String, Any>()
+          // phoneNumber.put("number", number)
+          // phoneNumber.put("label", label)
           val contact = HashMap<String, Any>()
-          contact["fullName"] = fullName
-          contact["phoneNumbers"] = listOf(number)
-          contactsList.add(contact)
+          contact.put("fullName", fullName)
+          contact.put("phoneNumbers", listOf(number))
+          pendingResult?.success(contact)
+          pendingResult = null
+          return@use true
         }
       }
 
     } else if (requestCode == PICK_CONTACT_MULTIPLE) {
+      val contactsList = ArrayList<HashMap<String, Any>>()
       // Handle multiple contacts selection
       val clipData = data?.clipData
       if (clipData != null) {
