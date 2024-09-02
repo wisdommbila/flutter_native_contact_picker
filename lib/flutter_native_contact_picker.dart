@@ -17,10 +17,9 @@ class FlutterContactPicker {
     return new Contact.fromMap(result);
   }
 
-  Future<List<Contact>?> selectContacts() async {
-    // if (!Platform.isIOS) throw UnimplementedError();
-    final List<dynamic>? result = await _channel.invokeMethod('selectContacts');
-    return result?.map((e) => Contact.fromMap(e)).toList();
+  static Future<List<Map<String, dynamic>>> selectContacts() async {
+    final List<dynamic> contacts = await _channel.invokeMethod('selectContacts');
+    return contacts.cast<Map<String, dynamic>>();
   }
 }
 
